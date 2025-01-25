@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const SPACEX_API_URL = 'https://api.specexdata.com/v4/launches';
+const SPACEX_API_URL = 'https://api.spacexdata.com/v4/launches';
 
 function LaunchTracker(){
     const [launches, setLanches] = useState([]);
