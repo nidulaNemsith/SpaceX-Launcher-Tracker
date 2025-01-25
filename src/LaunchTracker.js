@@ -2,36 +2,43 @@ import { useState, useEffect } from "react";
 
 const SPACEX_API_URL = 'https://api.spacexdata.com/v4/launches';
 
-function LaunchTracker(){
+function LaunchTracker() {
     const [launches, setLanches] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const launchPerPage = 10;
 
-    useEffect(() =>{
+    useEffect(() => {
         fetch(SPACEX_API_URL)
-        .then((response) =>{
-            if(!response.ok){
-                throw new Error('Failed to fetch data');
-            }
-            return response.json();
-        })
-        .then((data)=>{
-            setLanches(data);
-            setLoading(false);
-        })
-        .catch((error) =>{
-            setError(error);
-            setLoading(false);
-        }, []);
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+                return response.json();
+            })
+            .then((data) => {
+                setLanches(data);
+                setLoading(false);
+            })
+            .catch((error) => {
+                setError(error);
+                setLoading(false);
+            }, []);
     });
 
-    return(
+    const indexOfLastLaunch = currentPage * launchPerPage;
+    const indexOfFirstLaunch = indexOfLastLaunch - launchPerPage;
+    const currentLaunches = launches.slice(indexOfFirstLaunch, indexOfLastLaunch);
+    const totalPagesNum = Math.ceil(launches.length / launchPerPage);
+
+    return (
         <div>
             <h1>SpaceX Launch Tracker</h1>
             {loading && <p>Loading...</p>}
             {error && <p>{error.message}</p>}
             <ul>
-                {launches.map((launch) => (
+                {currentLaunches.map((launch) => (
                     <li key={launch.id}>
                         <h2>{launch.name}</h2>
                         <p>Data : {new Date(launch.date_utc).toLocaleDateString}</p>
@@ -45,7 +52,7 @@ function LaunchTracker(){
 
         </div>
     );
-  
+
 }
 
 export default LaunchTracker;
