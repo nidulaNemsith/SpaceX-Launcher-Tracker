@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import './LaunchTracker.css';
 
 const SPACEX_API_URL = 'https://api.spacexdata.com/v4/launches';
 
@@ -30,18 +31,24 @@ function LaunchTracker() {
     const indexOfLastLaunch = currentPage * launchPerPage;
     const indexOfFirstLaunch = indexOfLastLaunch - launchPerPage;
     const currentLaunches = launches.slice(indexOfFirstLaunch, indexOfLastLaunch);
-    const totalPagesNum = Math.ceil(launches.length / launchPerPage);
+    const totalPages = Math.ceil(launches.length / launchPerPage);
+
+    const handleClick = (pageNumber) => {
+        setCurrentPage(pageNumber);
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
 
     return (
         <div>
-            <h1>SpaceX Launch Tracker</h1>
+            <h1 className="title">SpaceX Launch Tracker</h1>
             {loading && <p>Loading...</p>}
             {error && <p>{error.message}</p>}
-            <ul>
+
+            <ul className="launches-list">
                 {currentLaunches.map((launch) => (
-                    <li key={launch.id}>
+                    <li key={launch.id} className="launch-item">
                         <h2>{launch.name}</h2>
-                        <p>Data : {new Date(launch.date_utc).toLocaleDateString}</p>
+                        <p>Date : {new Date(launch.date_utc).toLocaleDateString()}</p>
                         <p>Rocket :{launch.rocket}</p>
                         <p>Launch Site : {launch.launchpad}</p>
                         <p>Details : {launch.details ? launch.details : 'No Details available for this launch'} </p>
@@ -49,6 +56,18 @@ function LaunchTracker() {
                     </li>
                 ))}
             </ul>
+            <div className="pagination">
+                {Array.from({length: totalPages}, (_, index) => index + 1).map((pageNumber) => (
+                        <button 
+                            key={pageNumber} 
+                            onClick={() => handleClick(pageNumber)} 
+                            disabled={pageNumber === currentPage}
+                            className={`pagination-button ${pageNumber === currentPage ? 'active':''}`}
+                            >
+                                {pageNumber}
+                        </button>))
+                }
+            </div>
 
         </div>
     );
